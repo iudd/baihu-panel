@@ -51,8 +51,9 @@ type AgentTask struct {
 	Timeout   int                 `json:"timeout"`
 	WorkDir   string              `json:"work_dir"`
 	Envs      string              `json:"envs"`
-	Languages []map[string]string `json:"languages"`
-	Enabled   bool                `json:"enabled"`
+	Languages   []map[string]string `json:"languages"`
+	RandomRange int                 `json:"random_range"`
+	Enabled     bool                `json:"enabled"`
 }
 
 func (t *AgentTask) GetID() string {
@@ -96,6 +97,10 @@ func (t *AgentTask) GetSchedule() string {
 		return t.Schedule
 	}
 	return t.Cron
+}
+
+func (t *AgentTask) GetRandomRange() int {
+	return t.RandomRange
 }
 
 type TaskResult struct {
@@ -674,7 +679,8 @@ func (a *Agent) updateTasks(tasks []AgentTask) {
 		oldTask, exists := a.tasks[id]
 		if !exists || oldTask.Schedule != task.Schedule || oldTask.Command != task.Command ||
 			oldTask.Enabled != task.Enabled || oldTask.Timeout != task.Timeout ||
-			oldTask.WorkDir != task.WorkDir || oldTask.Envs != task.Envs {
+			oldTask.WorkDir != task.WorkDir || oldTask.Envs != task.Envs ||
+			oldTask.RandomRange != task.RandomRange {
 			if task.Enabled {
 				err := a.cronManager.AddTask(task)
 				if err != nil {

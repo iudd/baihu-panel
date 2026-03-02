@@ -317,9 +317,10 @@ func (s *AgentService) GetTasks(agentID uint) []models.AgentTask {
 			Schedule:  task.Schedule,
 			Timeout:   task.Timeout,
 			WorkDir:   task.WorkDir,
-			Envs:      envVarsStr, // 传递 "KEY1=VALUE1,KEY2=VALUE2" 格式
-			Languages: task.Languages,
-			Enabled:   task.Enabled,
+			Envs:        envVarsStr, // 传递 "KEY1=VALUE1,KEY2=VALUE2" 格式
+			Languages:   task.Languages,
+			RandomRange: task.RandomRange,
+			Enabled:     task.Enabled,
 		}
 	}
 

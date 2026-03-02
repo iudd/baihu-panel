@@ -32,6 +32,7 @@ type CronTask interface {
 	Task
 	GetSchedule() string
 	UseMise() bool
+	GetRandomRange() int
 }
 
 // Request 任务执行请求

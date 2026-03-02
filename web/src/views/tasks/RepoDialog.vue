@@ -327,10 +327,19 @@ async function save() {
           </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-3">
-          <Label class="sm:text-right text-sm">超时/清理</Label>
+          <Label class="sm:text-right text-sm">随机延迟</Label>
+          <div class="sm:col-span-3 flex items-center gap-2">
+            <div class="flex items-center gap-1.5">
+               <Input v-model.number="form.random_range" type="number" :min="0" :step="1" @input="form.random_range = Math.max(0, Math.floor(form.random_range || 0))" placeholder="0" class="w-20 h-9 text-sm" />
+               <span class="text-sm text-muted-foreground whitespace-nowrap">秒</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-3">
+          <Label class="sm:text-right text-sm">超时清理</Label>
           <div class="sm:col-span-3 flex flex-wrap items-center gap-2">
             <div class="flex items-center gap-1.5">
-              <Input v-model.number="form.timeout" type="number" placeholder="30" class="w-20 h-9 text-sm" />
+               <Input v-model.number="form.timeout" type="number" :min="0" :step="1" @input="form.timeout = Math.max(0, Math.floor(form.timeout || 0))" placeholder="30" class="w-20 h-9 text-sm" />
               <span class="text-sm text-muted-foreground whitespace-nowrap">分钟</span>
             </div>
             <div class="flex items-center gap-1.5">
@@ -353,12 +362,12 @@ async function save() {
           <Label class="sm:text-right text-sm">失败重试</Label>
           <div class="sm:col-span-3 flex items-center gap-2">
             <div class="flex items-center gap-1.5">
-              <Input v-model.number="form.retry_count" type="number" placeholder="0" class="w-16 h-9 text-sm" />
+               <Input v-model.number="form.retry_count" type="number" :min="0" :step="1" @input="form.retry_count = Math.max(0, Math.floor(form.retry_count || 0))" placeholder="0" class="w-16 h-9 text-sm" />
               <span class="text-sm text-muted-foreground whitespace-nowrap">次</span>
             </div>
             <div class="flex items-center gap-1.5 ml-2" v-if="form.retry_count && form.retry_count > 0">
               <span class="text-sm text-muted-foreground whitespace-nowrap">间隔</span>
-              <Input v-model.number="form.retry_interval" type="number" placeholder="0" class="w-16 h-9 text-sm" />
+               <Input v-model.number="form.retry_interval" type="number" :min="0" :step="1" @input="form.retry_interval = Math.max(0, Math.floor(form.retry_interval || 0))" placeholder="0" class="w-16 h-9 text-sm" />
               <span class="text-sm text-muted-foreground whitespace-nowrap">秒</span>
             </div>
           </div>

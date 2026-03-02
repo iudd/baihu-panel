@@ -24,6 +24,7 @@ type TaskVO struct {
 	Enabled       bool                `json:"enabled"`
 	RetryCount    int                 `json:"retry_count"`
 	RetryInterval int                 `json:"retry_interval"`
+	RandomRange   int                 `json:"random_range"`
 	LastRun       *models.LocalTime   `json:"last_run"`
 	NextRun     *models.LocalTime   `json:"next_run"`
 	CreatedAt   models.LocalTime    `json:"created_at"`
@@ -53,6 +54,7 @@ func ToTaskVO(task *models.Task) *TaskVO {
 		Enabled:       task.Enabled,
 		RetryCount:    task.RetryCount,
 		RetryInterval: task.RetryInterval,
+		RandomRange:   task.RandomRange,
 		LastRun:       task.LastRun,
 		NextRun:     task.NextRun,
 		CreatedAt:   task.CreatedAt,

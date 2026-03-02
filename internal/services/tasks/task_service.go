@@ -12,7 +12,7 @@ func NewTaskService() *TaskService {
 	return &TaskService{}
 }
 
-func (ts *TaskService) CreateTask(name, command, schedule string, timeout int, workDir, cleanConfig, envs, taskType, config string, agentID *uint, languages []map[string]string, triggerType string, tags string, retryCount int, retryInterval int) *models.Task {
+func (ts *TaskService) CreateTask(name, command, schedule string, timeout int, workDir, cleanConfig, envs, taskType, config string, agentID *uint, languages []map[string]string, triggerType string, tags string, retryCount int, retryInterval int, randomRange int) *models.Task {
 	if taskType == "" {
 		taskType = "task"
 	}
@@ -36,6 +36,7 @@ func (ts *TaskService) CreateTask(name, command, schedule string, timeout int, w
 		Enabled:       true,
 		RetryCount:    retryCount,
 		RetryInterval: retryInterval,
+		RandomRange:   randomRange,
 	}
 	if triggerType != constant.TriggerTypeCron {
 		task.NextRun = nil
@@ -83,7 +84,7 @@ func (ts *TaskService) GetTaskByID(id int) *models.Task {
 	return &task
 }
 
-func (ts *TaskService) UpdateTask(id int, name, command, schedule string, timeout int, workDir, cleanConfig, envs string, enabled bool, taskType, config string, agentID *uint, languages []map[string]string, triggerType string, tags string, retryCount int, retryInterval int) *models.Task {
+func (ts *TaskService) UpdateTask(id int, name, command, schedule string, timeout int, workDir, cleanConfig, envs string, enabled bool, taskType, config string, agentID *uint, languages []map[string]string, triggerType string, tags string, retryCount int, retryInterval int, randomRange int) *models.Task {
 	var task models.Task
 	if err := database.DB.First(&task, id).Error; err != nil {
 		return nil
@@ -101,6 +102,7 @@ func (ts *TaskService) UpdateTask(id int, name, command, schedule string, timeou
 	task.Languages = languages
 	task.RetryCount = retryCount
 	task.RetryInterval = retryInterval
+	task.RandomRange = randomRange
 	if taskType != "" {
 		task.Type = taskType
 	}

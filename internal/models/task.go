@@ -50,6 +50,7 @@ type Task struct {
 	AgentID       *uint               `json:"agent_id" gorm:"index"`                      // Agent ID，为空表示本地执行
 	RetryCount    int                 `json:"retry_count" gorm:"default:0"`               // 失败重试次数
 	RetryInterval int                 `json:"retry_interval" gorm:"default:0"`            // 失败重试间隔(秒)
+	RandomRange   int                 `json:"random_range" gorm:"default:0"`             // 随机延迟范围(秒)
 	Enabled       bool                `json:"enabled" gorm:"default:true"`
 	RunningGo     string              `json:"running_go" gorm:"type:text"` // 正在运行的 go routine id 数组 (JSON)
 	LastRun       *LocalTime          `json:"last_run"`
@@ -101,6 +102,10 @@ func (t *Task) UseMise() bool {
 
 func (t *Task) GetSchedule() string {
 	return t.Schedule
+}
+
+func (t *Task) GetRandomRange() int {
+	return t.RandomRange
 }
 
 // TaskLog 代表任务执行的日志记录

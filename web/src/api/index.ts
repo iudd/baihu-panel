@@ -286,6 +286,7 @@ export interface Task {
   envs: string
   retry_count: number
   retry_interval: number
+  random_range: number
   languages: { name: string; version: string }[]
   agent_id: number | null
   enabled: boolean

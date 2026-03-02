@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strconv"
+
 	"github.com/engigu/baihu-panel/internal/constant"
 
 	"gorm.io/gorm"
@@ -59,8 +61,29 @@ type AgentTask struct {
 	Timeout   int                 `json:"timeout"`
 	WorkDir   string              `json:"work_dir"`
 	Envs      string              `json:"envs"`
-	Languages []map[string]string `json:"languages"`
-	Enabled   bool                `json:"enabled"`
+	Languages   []map[string]string `json:"languages"`
+	RandomRange int                 `json:"random_range"`
+	Enabled     bool                `json:"enabled"`
+}
+
+func (t AgentTask) GetID() string {
+	return strconv.FormatUint(uint64(t.ID), 10)
+}
+
+func (t AgentTask) GetName() string {
+	return t.Name
+}
+
+func (t AgentTask) GetCommand() string {
+	return t.Command
+}
+
+func (t AgentTask) GetSchedule() string {
+	return t.Schedule
+}
+
+func (t AgentTask) GetRandomRange() int {
+	return t.RandomRange
 }
 
 // AgentTaskResult Agent 上报的任务执行结果
