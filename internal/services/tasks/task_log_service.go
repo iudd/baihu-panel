@@ -43,6 +43,7 @@ func (s *TaskLogService) CreateEmptyLog(taskID string, command string) (*models.
 		Command:   command,
 		Status:    "running",
 		StartTime: &startTime,
+		CreatedAt: models.Now(),
 	}
 	if err := database.DB.Create(taskLog).Error; err != nil {
 		return nil, err
@@ -57,6 +58,9 @@ func (s *TaskLogService) SaveTaskLog(taskLog *models.TaskLog) error {
 		err = database.DB.Model(taskLog).Where("id = ?", taskLog.ID).Updates(taskLog).Error
 	} else {
 		taskLog.ID = utils.GenerateID()
+		if taskLog.CreatedAt.Time().IsZero() {
+			taskLog.CreatedAt = models.Now()
+		}
 		err = database.DB.Create(taskLog).Error
 	}
 
@@ -155,15 +159,16 @@ func (s *TaskLogService) CreateTaskLogFromAgentResult(result *models.AgentTaskRe
 	}
 
 	taskLog := &models.TaskLog{
-		ID:       utils.GenerateID(),
-		TaskID:   result.TaskID,
-		AgentID:  &result.AgentID,
-		Command:  result.Command,
-		Output:   compressed,
-		Error:    result.Error,
-		Status:   result.Status,
-		Duration: result.Duration,
-		ExitCode: result.ExitCode,
+		ID:        utils.GenerateID(),
+		TaskID:    result.TaskID,
+		AgentID:   &result.AgentID,
+		Command:   result.Command,
+		Output:    compressed,
+		Error:     result.Error,
+		Status:    result.Status,
+		Duration:  result.Duration,
+		ExitCode:  result.ExitCode,
+		CreatedAt: models.Now(),
 	}
 
 	// 处理开始和结束时间
@@ -209,6 +214,7 @@ func (s *TaskLogService) CreateTaskLogFromLocalExecution(taskID string, command,
 		ExitCode:  exitCode,
 		StartTime: &startTime,
 		EndTime:   &endTime,
+		CreatedAt: models.Now(),
 	}
 
 	return taskLog, nil

@@ -21,24 +21,26 @@ func (ts *TaskService) CreateTask(name, command, schedule string, timeout int, w
 		triggerType = constant.TriggerTypeCron
 	}
 	task := &models.Task{
-		ID:          utils.GenerateID(),
-		Name:        name,
-		Command:     command,
-		Tags:        tags,
-		Type:        taskType,
-		TriggerType: triggerType,
-		Config:      config,
-		Schedule:    schedule,
-		Timeout:     timeout,
-		WorkDir:     workDir,
-		CleanConfig: cleanConfig,
-		Envs:        envs,
+		ID:            utils.GenerateID(),
+		Name:          name,
+		Command:       command,
+		Tags:          tags,
+		Type:          taskType,
+		TriggerType:   triggerType,
+		Config:        config,
+		Schedule:      schedule,
+		Timeout:       timeout,
+		WorkDir:       workDir,
+		CleanConfig:   cleanConfig,
+		Envs:          envs,
 		Languages:     languages,
 		AgentID:       agentID,
 		Enabled:       true,
 		RetryCount:    retryCount,
 		RetryInterval: retryInterval,
 		RandomRange:   randomRange,
+		CreatedAt:     models.Now(),
+		UpdatedAt:     models.Now(),
 	}
 	if triggerType != constant.TriggerTypeCron {
 		task.NextRun = nil
@@ -111,11 +113,27 @@ func (ts *TaskService) UpdateTask(id string, name, command, schedule string, tim
 	if triggerType != "" {
 		task.TriggerType = triggerType
 	}
-	if task.TriggerType != constant.TriggerTypeCron {
-		task.NextRun = nil
+	updates := map[string]interface{}{
+		"name":           name,
+		"command":        command,
+		"tags":           tags,
+		"schedule":       schedule,
+		"timeout":        timeout,
+		"work_dir":       workDir,
+		"clean_config":   cleanConfig,
+		"envs":           envs,
+		"enabled":        enabled,
+		"agent_id":       agentID,
+		"languages":      languages,
+		"retry_count":    retryCount,
+		"retry_interval": retryInterval,
+		"random_range":   randomRange,
+		"type":           task.Type,
+		"trigger_type":   task.TriggerType,
+		"next_run":       task.NextRun,
+		"config":         config,
 	}
-	task.Config = config
-	database.DB.Save(&task)
+	database.DB.Model(&task).Updates(updates)
 	return &task
 }
 

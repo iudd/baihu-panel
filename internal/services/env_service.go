@@ -16,12 +16,14 @@ func NewEnvService() *EnvService {
 
 func (es *EnvService) CreateEnvVar(name, value, remark string, hidden bool, userID string) *models.EnvironmentVariable {
 	env := &models.EnvironmentVariable{
-		ID:     utils.GenerateID(),
-		Name:   name,
-		Value:  value,
-		Remark: remark,
-		Hidden: hidden,
-		UserID: userID,
+		ID:        utils.GenerateID(),
+		Name:      name,
+		Value:     value,
+		Remark:    remark,
+		Hidden:    hidden,
+		UserID:    userID,
+		CreatedAt: models.Now(),
+		UpdatedAt: models.Now(),
 	}
 	database.DB.Create(env)
 	return env
@@ -60,11 +62,13 @@ func (es *EnvService) UpdateEnvVar(id string, name, value, remark string, hidden
 	if err := database.DB.Where("id = ?", id).First(&env).Error; err != nil {
 		return nil
 	}
-	env.Name = name
-	env.Value = value
-	env.Remark = remark
-	env.Hidden = hidden
-	database.DB.Save(&env)
+	updates := map[string]interface{}{
+		"name":   name,
+		"value":  value,
+		"remark": remark,
+		"hidden": hidden,
+	}
+	database.DB.Model(&env).Updates(updates)
 	return &env
 }
 
