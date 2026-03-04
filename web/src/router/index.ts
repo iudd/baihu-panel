@@ -79,4 +79,18 @@ router.beforeEach(async (to, _from, next) => {
   }
 })
 
+// 捕获动态导入(Chunk)加载失败异常（部署新版本时发生）
+router.onError((error) => {
+  const isChunkLoadFailed = error.message && error.message.includes('Failed to fetch dynamically imported module')
+  if (isChunkLoadFailed) {
+    if (!sessionStorage.getItem('__chunk_reloaded__')) {
+      sessionStorage.setItem('__chunk_reloaded__', 'true')
+      window.location.reload()
+    } else {
+      console.error('动态模块加载持续失败', error)
+      sessionStorage.removeItem('__chunk_reloaded__')
+    }
+  }
+})
+
 export default router
