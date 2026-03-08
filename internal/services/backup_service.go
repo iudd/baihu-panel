@@ -55,6 +55,8 @@ func (s *BackupService) getTableConfigs() []tableConfig {
 		{"tokens.json", s.exportTable(&[]models.AgentToken{}, true), s.restoreTable(&[]models.AgentToken{}, true)},
 		{"languages.json", s.exportTable(&[]models.Language{}, true), s.restoreTable(&[]models.Language{}, true)},
 		{"deps.json", s.exportTable(&[]models.Dependency{}, true), s.restoreTable(&[]models.Dependency{}, true)},
+		{"notify_ways.json", s.exportTable(&[]models.NotifyWay{}, true), s.restoreTable(&[]models.NotifyWay{}, true)},
+		{"notify_bindings.json", s.exportTable(&[]models.NotifyBinding{}, true), s.restoreTable(&[]models.NotifyBinding{}, true)},
 	}
 }
 
@@ -212,8 +214,8 @@ func (s *BackupService) Restore(zipPath string) error {
 				}
 			}
 		}
-	// } else {
-	// 	return fmt.Errorf("非法备份包：缺失版本标记")
+		// } else {
+		// 	return fmt.Errorf("非法备份包：缺失版本标记")
 	}
 
 	// 开启全局事务
@@ -231,6 +233,8 @@ func (s *BackupService) Restore(zipPath string) error {
 		tx.Unscoped().Where("1=1").Delete(&models.AgentToken{})
 		tx.Unscoped().Where("1=1").Delete(&models.Language{})
 		tx.Unscoped().Where("1=1").Delete(&models.Dependency{})
+		tx.Unscoped().Where("1=1").Delete(&models.NotifyWay{})
+		tx.Unscoped().Where("1=1").Delete(&models.NotifyBinding{})
 
 		// 2. 依次恢复每个表
 		for _, cfg := range configs {
@@ -332,6 +336,10 @@ func (s *BackupService) restoreFromZipFile(tx *gorm.DB, f *zip.File, filename st
 		return restoreStreamBatch[models.Language](tx, decoder)
 	case "deps.json":
 		return restoreStreamBatch[models.Dependency](tx, decoder)
+	case "notify_ways.json":
+		return restoreStreamBatch[models.NotifyWay](tx, decoder)
+	case "notify_bindings.json":
+		return restoreStreamBatch[models.NotifyBinding](tx, decoder)
 	default:
 		return nil
 	}
