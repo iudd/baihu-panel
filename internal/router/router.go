@@ -39,17 +39,18 @@ func Setup(c *Controllers) *gin.Engine {
 	cfg := services.GetConfig()
 	urlPrefix := strings.TrimSuffix(cfg.Server.URLPrefix, "/")
 
-	// 按需绑定 Pprof 调试路由
-	if cfg.Server.PprofEnabled {
-		pprof.Register(router)
-	}
-
 	// 创建一个路由组，如果有前缀则使用前缀，否则使用根路径
 	var root *gin.RouterGroup
 	if urlPrefix != "" {
 		root = router.Group(urlPrefix)
 	} else {
 		root = router.Group("")
+	}
+
+	// 按需绑定 Pprof 调试路由 (注册在 root 下以支持 URLPrefix)
+	if cfg.Server.PprofEnabled {
+		// pprof.RouteRegister 会在传入的路由组下注册 /debug/pprof 等路由
+		pprof.RouteRegister(root)
 	}
 
 	// =========================================================================
@@ -96,7 +97,7 @@ func Setup(c *Controllers) *gin.Engine {
 			hasAnyExt = true
 		}
 
-		if strings.HasPrefix(relPath, "/api/") || strings.HasPrefix(relPath, "/assets/") || hasAnyExt {
+		if strings.HasPrefix(relPath, "/api/") || strings.HasPrefix(relPath, "/assets/") || strings.HasPrefix(relPath, "/debug/") || hasAnyExt {
 			ctx.String(404, "404 Not Found")
 			return
 		}
