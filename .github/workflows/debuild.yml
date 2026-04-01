@@ -48,3 +48,8 @@ jobs:
         with:
           name: baihu-panel-binary
           path: baihu-release.zip
+- name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/') # 只有你推送 tag 时才触发
+        with:
+          files: baihu-release.zip
