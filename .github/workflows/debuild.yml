@@ -1,0 +1,50 @@
+name: Build Baihu Panel
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # 支持手动触发编译
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 1. 编译前端
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build Frontend
+        run: |
+          cd web
+          npm install -g pnpm
+          pnpm install
+          pnpm build
+          cd ..
+
+      # 2. 编译后端 (Go)
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+      - name: Build Backend
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o baihu-server main.go
+
+      # 3. 打包成品
+      - name: Package Artifacts
+        run: |
+          mkdir -p release/web
+          cp baihu-server release/
+          cp -r web/dist release/web/
+          cd release && zip -r ../baihu-release.zip .
+
+      # 4. 上传到 GitHub Actions 页面供下载
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: baihu-panel-binary
+          path: baihu-release.zip
